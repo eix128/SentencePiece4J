@@ -5,6 +5,11 @@ Works Cross Platform for all OS
 use with :
 
 #   mvn package
+        <dependency>
+            <groupId>io.github.eix128</groupId>
+            <artifactId>sentencepiece4j</artifactId>
+            <version>1.0.1</version>
+        </dependency>
 
 # Usage
     import com.sentencepiece.Model;
