@@ -2,21 +2,23 @@
 SentencePiece in pure Java , No JNI Required.
 Works Cross Platform for all OS
 
-Try Library with that code:
-import com.sentencepiece.Model;
-import com.sentencepiece.Scoring;
-import com.sentencepiece.SentencePieceAlgorithm;
+use with :
 
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.List;
+#   mvn package
 
-public class Main {
-    public static void main(String[] args) throws IOException {
+# Usage
+    import com.sentencepiece.Model;
+    import com.sentencepiece.Scoring;
+    import com.sentencepiece.SentencePieceAlgorithm;
+
+    import java.io.IOException;
+    import java.nio.file.Paths;
+    import java.util.List;
+
+    public class Main {
+        public static void main(String[] args) throws IOException {
         Model model = Model.parseFrom(Paths.get("sentencepiece.bpe.model"));
-        SentencePieceAlgorithm algorithm = new SentencePieceAlgorithm(
-                true, Scoring.HIGHEST_SCORE
-        );
+        SentencePieceAlgorithm algorithm = new SentencePieceAlgorithm( true, Scoring.HIGHEST_SCORE );
 
         {
             String raw = "o captain! my captain! our fearful trip is done," +
@@ -56,3 +58,4 @@ public class Main {
 
     }
 }
+
