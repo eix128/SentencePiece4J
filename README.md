@@ -4,6 +4,9 @@ Works Cross Platform for all OS
 
 use with :
 
+# download sentencepiece
+        wget https://github.com/eix128/SentencePiece4J/raw/refs/heads/main/src/main/resources/sentencepiece.bpe.model
+
 #   mvn package
         <dependency>
             <groupId>io.github.eix128</groupId>
