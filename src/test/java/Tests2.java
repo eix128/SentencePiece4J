@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Tests2 {
     public static void main(String[] args) throws IOException {
-        Path modelPath = Paths.get("sentencepiece.bpe.model");
+        Path modelPath = Paths.get("models/sentencepiece.bpe.model");
         SentencePieceProcessor processor = new SentencePieceProcessor(modelPath);
 
         String raw = "Akşam eve gidince yağlı ballı ekmek yemek istiyorum.";

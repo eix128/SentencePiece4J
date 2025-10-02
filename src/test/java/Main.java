@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        Model model = Model.parseFrom(Paths.get("sentencepiece.bpe.model"));
+        Model model = Model.getInstance();
         SentencePieceAlgorithm algorithm = new SentencePieceAlgorithm(
                 true, Scoring.HIGHEST_SCORE
         );
@@ -40,7 +40,7 @@ public class Main {
 
         //Test Turkish
         {
-            String raw = "kusur bulmak için bakma birine! kakmak için bakarsan bulursun.kusursuz olmayı marifet edin kendine , işte asıl o zaman kusursuz olursun!...";
+            String raw = "kusur bulmak için bakma birine! bakmak için bakarsan bulursun.kusursuz olmayı marifet edin kendine , işte asıl o zaman kusursuz olursun!...";
             List<Integer> ids = model.encodeNormalized(raw, algorithm);
 
             System.out.println("Token IDs: " + ids);

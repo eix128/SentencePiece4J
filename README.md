@@ -65,4 +65,7 @@ use with :
             }
         }
     }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 1acac79 (Update README, pom.xml and source files)

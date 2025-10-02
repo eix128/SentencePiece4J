@@ -4,14 +4,50 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.bayner</groupId>
-    <artifactId>SentencePiece4J</artifactId>
-    <version>1.0</version>
+    <groupId>io.github.eix128</groupId>
+    <artifactId>sentencepiece4j</artifactId>
+    <version>1.0.1</version>
+
+    <!-- REQUIRED by Central -->
+    <name>${project.groupId}:${project.artifactId}</name>
+    <description>Java utilities/bindings for SentencePiece (tokenize/encode/decode, BPE/SPM helpers).</description>
+    <url>https://github.com/eix128/SentencePiece4J</url>
+
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>Kadir BASOL</name>
+            <email>kadir.bayner@gmail.com</email>
+            <url>https://github.com/eix128</url>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://github.com/eix128/SentencePiece4J</url>
+        <connection>scm:git:https://github.com/eix128/SentencePiece4J.git</connection>
+        <developerConnection>scm:git:ssh://github.com/eix128/SentencePiece4J.git</developerConnection>
+    </scm>
+
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- JUnit 5 that still supports Java 8 -->
+        <junit.jupiter.version>5.9.3</junit.jupiter.version>
+        <junit.platform.version>1.9.3</junit.platform.version>
+
+        <gpg.keyname>85D81515741EDCFE6BF86ED41A342E30F64EAA40</gpg.keyname>
+
+        <!-- Surefire that works well with JDK8 + JUnit5 -->
+        <maven.surefire.plugin.version>3.1.2</maven.surefire.plugin.version>
     </properties>
 
     <dependencies>
@@ -25,41 +61,70 @@
             <artifactId>fastutil</artifactId>
             <version>8.5.12</version>
         </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter</artifactId>
-            <version>RELEASE</version>
-            <scope>test</scope>
-        </dependency>
+
     </dependencies>
 
 
     <build>
         <plugins>
+            <!-- Sources -->
             <plugin>
-                <groupId>org.xolstice.maven.plugins</groupId>
-                <artifactId>protobuf-maven-plugin</artifactId>
-                <version>0.6.1</version>
-                <configuration>
-                    <!-- protoc version must be >= 3.25.6 (aka 25.6) -->
-                    <protocArtifact>
-                        com.google.protobuf:protoc:3.25.6:exe:${os.detected.classifier}
-                    </protocArtifact>
-                </configuration>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.1</version>
                 <executions>
                     <execution>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
+                        <id>attach-sources</id>
+                        <goals><goal>jar-no-fork</goal></goals>
                     </execution>
                 </executions>
             </plugin>
 
-            <!-- If you run tests, pass the same runtime on surefire/failsafe classpath -->
+
+            <!-- sign all artifacts -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.2.5</version>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.2.4</version>
+                <executions>
+                    <execution><id>sign</id><phase>verify</phase><goals><goal>sign</goal></goals></execution>
+                </executions>
+                <configuration>
+                    <gpgArguments>
+                        <arg>--pinentry-mode</arg><arg>loopback</arg>
+                    </gpgArguments>
+                </configuration>
+            </plugin>
+
+            <!-- Javadoc -->
+            <plugin>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.6.3</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals><goal>jar</goal></goals>
+                        <configuration>
+                            <source>8</source>
+                            <failOnError>false</failOnError>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
+            <!-- Sonatype Central publishing -->
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.9.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <!-- optional for CI:
+                    <autoPublish>true</autoPublish>
+                    <waitUntil>published</waitUntil>
+                    -->
+                </configuration>
             </plugin>
         </plugins>
     </build>

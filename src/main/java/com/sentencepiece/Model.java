@@ -1,9 +1,12 @@
 package com.sentencepiece;
 
 
+import com.google.protobuf.InvalidProtocolBufferException;
 import sentencepiece.SentencepieceModel;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.Normalizer;
@@ -31,12 +34,26 @@ public class Model {
     // NEW: store <unk> id (or -1 if absent)
     private int unkId = -1;
 
+
     public Model() {
+
     }
 
 
-    public static Model parseFrom(Path modelPath) throws IOException {
-        byte[] bytes = Files.readAllBytes(modelPath);
+    private static byte[] toByteArray(InputStream in) throws IOException {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        byte[] data = new byte[8192];
+        int nRead;
+        while ((nRead = in.read(data, 0, data.length)) != -1) {
+            buffer.write(data, 0, nRead);
+        }
+        return buffer.toByteArray();
+    }
+
+
+
+
+    private static final Model init( byte[] bytes ) throws InvalidProtocolBufferException {
         SentencepieceModel.ModelProto modelProto = SentencepieceModel.ModelProto.parseFrom(bytes);
         Model model = new Model();
 
@@ -44,15 +61,13 @@ public class Model {
         for (SentencepieceModel.ModelProto.SentencePiece sp : modelProto.getPiecesList()) {
             String token = sp.getPiece();
             float score = sp.getScore();
-            // If your Piece has a type ctor, pass sp.getType() too; otherwise keep as is:
             model.addPiece(token, id++, score, mapType(sp.getType()));
         }
 
-        // NEW: determine unkId from TrainerSpec or by name fallback
+        // determine unkId
         if (modelProto.hasTrainerSpec() && modelProto.getTrainerSpec().hasUnkId()) {
             model.unkId = modelProto.getTrainerSpec().getUnkId();
         } else {
-            // Fallback: find a piece literally named "<unk>"
             for (Piece p : model.piecesById) {
                 if (p != null && "<unk>".equals(p.getToken())) {
                     model.unkId = p.getId();
@@ -60,8 +75,33 @@ public class Model {
                 }
             }
         }
-
         return model;
+    }
+
+    /**
+     * @return returns sentencepiece.bpe.model model which is stored inside library
+     * @throws IOException
+     */
+    public static Model getInstance( ) throws IOException {
+        return parseFromResource("models/sentencepiece.bpe.model");
+    }
+
+
+    public static Model parseFromResource(String resourceName) throws IOException {
+        try (InputStream in = Model.class.getClassLoader().getResourceAsStream(resourceName)) {
+            if (in == null) {
+                throw new IOException("Resource not found: " + resourceName);
+            }
+            byte[] bytes = toByteArray(in);
+            return init(bytes);
+        }
+    }
+
+
+
+    public static Model parseFrom(Path modelPath) throws IOException {
+        byte[] bytes = Files.readAllBytes(modelPath);
+        return init(bytes);
     }
 
     public void addPiece(String token, int id, float score, TokenType type) {

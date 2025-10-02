@@ -8,7 +8,7 @@ import java.util.List;
 
 public class Tests {
     public static void main(String[] args) throws IOException {
-        Path modelPath = Paths.get("sentencepiece.bpe.model");
+        Path modelPath = Paths.get("models/sentencepiece.bpe.model");
 
         // Load the model
         System.out.println("Loading model...");
