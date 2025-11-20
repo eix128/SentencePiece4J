@@ -147,6 +147,12 @@ public class Model {
         return "<unk>";
     }
 
+    public String tokenById(int id) {
+        if (id < 0 || id >= piecesById.size()) return "<unk>";
+        Piece piece = piecesById.get(id);
+        return piece != null ? piece.getToken() : "<unk>";
+    }
+
     public int getUnkId() { return unkId; }
 
     public int getIdForToken(String token) {
