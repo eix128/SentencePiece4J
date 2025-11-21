@@ -53,7 +53,7 @@ public class Model {
 
 
 
-    private static final Model init( byte[] bytes ) throws InvalidProtocolBufferException {
+    private static Model init( byte[] bytes ) throws InvalidProtocolBufferException {
         SentencepieceModel.ModelProto modelProto = SentencepieceModel.ModelProto.parseFrom(bytes);
         Model model = new Model();
 
@@ -80,7 +80,7 @@ public class Model {
 
     /**
      * @return returns sentencepiece.bpe.model model which is stored inside library
-     * @throws IOException
+     * @throws IOException : when model is not found
      */
     public static Model getInstance( ) throws IOException {
         return parseFromResource("models/sentencepiece.bpe.model");
@@ -160,9 +160,6 @@ public class Model {
         return (piece != null) ? piece.getId() : -1;
     }
 
-    public String getTokenForId(int id) {
-        return getTokenById(id);
-    }
 
     public List<Integer> encode(String input) {
         // Naive space-based token matching for test (improve later with BPE segmenter)
@@ -180,14 +177,14 @@ public class Model {
         return ids;
     }
 
-
+    private static final Pattern pattern = Pattern.compile("\\s+");
 
     public List<Integer> encodeNormalized(String rawInput, SentencePieceAlgorithm algorithm) {
         // Step 1: Unicode normalization
         String normalized = Normalizer.normalize(rawInput, Normalizer.Form.NFKC).toLowerCase();
 
         // Step 2: Collapse whitespace
-        normalized = Pattern.compile("\\s+").matcher(normalized.trim()).replaceAll(" ");
+        normalized = pattern.matcher(normalized.trim()).replaceAll(" ");
 
         // Step 3: Add '▁' marker before each word
         StringBuilder sb = new StringBuilder();
@@ -208,7 +205,7 @@ public class Model {
         StringBuilder sb = new StringBuilder();
 
         for (int id : ids) {
-            String token = getTokenById(id);
+            String token = tokenById(id);
 
             if (token.equals("<unk>")) {
                 sb.append("�"); // or some fallback
@@ -244,7 +241,7 @@ public class Model {
 
     public String decode(List<Integer> ids) {
         return ids.stream()
-                .map(this::getTokenForId)
+                .map(this::tokenById)
                 .collect(Collectors.joining(" "));
     }
 }

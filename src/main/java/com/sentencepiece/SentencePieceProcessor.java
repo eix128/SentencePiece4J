@@ -41,7 +41,7 @@ public class SentencePieceProcessor {
 
     public String decode(List<Integer> ids) {
         return ids.stream()
-                .map(model::getTokenById)
+                .map(model::tokenById)
                 .map(t -> t.startsWith("▁") ? t.substring(1) : t)
                 .collect(Collectors.joining(" "))
                 .replaceAll(" +", " ")
@@ -52,7 +52,7 @@ public class SentencePieceProcessor {
         StringBuilder sb = new StringBuilder();
 
         for (int id : ids) {
-            String token = model.getTokenById(id);
+            String token = model.tokenById(id);
             if (token.startsWith("▁")) {
                 if (sb.length() > 0) sb.append(' ');
                 sb.append(token.substring(1));
