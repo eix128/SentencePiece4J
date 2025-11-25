@@ -11,7 +11,7 @@ use with :
         <dependency>
             <groupId>io.github.eix128</groupId>
             <artifactId>sentencepiece4j</artifactId>
-            <version>1.0.1</version>
+            <version>1.0.2</version>
         </dependency>
 
 # Usage
